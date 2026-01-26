@@ -285,7 +285,9 @@
       assign og_image_height = 630
       assign processed_og_image_url = og_image_to_use | image_url: width: og_image_width, height: og_image_height, crop: 'center'
       assign processed_twitter_image_url = og_image_to_use | image_url: width: 800, height: 418, crop: 'center'
+    endif
   -%}
+  {%- if og_image_to_use != blank -%}
   <meta property="og:image" content="https:{{ processed_og_image_url }}">
   <meta property="og:image:secure_url" content="https:{{ processed_og_image_url }}">
   <meta property="og:image:width" content="{{ og_image_width }}">
