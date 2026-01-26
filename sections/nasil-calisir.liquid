@@ -1,0 +1,607 @@
+{% comment %}
+  Nasıl Çalışır Sayfası Section
+{% endcomment %}
+
+<style>
+  .nasil-calisir-wrapper * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .nasil-calisir-wrapper {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .nc-hero {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+  }
+
+  .nc-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  .nc-hero p {
+    font-size: 1.5rem;
+    opacity: 0.9;
+  }
+
+  .nc-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+
+  .nc-section {
+    margin-bottom: 80px;
+  }
+
+  .nc-section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #1f2937;
+    font-weight: 700;
+  }
+
+  .nc-process-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    position: relative;
+  }
+
+  .nc-process-line {
+    position: absolute;
+    top: 30px;
+    left: 60px;
+    right: 60px;
+    height: 4px;
+    background: #e5e7eb;
+    z-index: 0;
+  }
+
+  .nc-process-line-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #10b981;
+    transition: width 0.3s ease;
+  }
+
+  .nc-step-indicator {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .nc-step-indicator.active {
+    background: #10b981;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .nc-step-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .nc-step-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .nc-step-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .nc-step-content p {
+    font-size: 1.2rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+  }
+
+  .nc-step-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .nc-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nc-btn-primary {
+    background: #10b981;
+    color: white;
+  }
+
+  .nc-btn-primary:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+
+  .nc-btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .nc-btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  .nc-calculator {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+    border-radius: 20px;
+    padding: 3rem;
+  }
+
+  .nc-calculator-inner {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .nc-calculator-label {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nc-slider {
+    width: 100%;
+    height: 12px;
+    border-radius: 10px;
+    outline: none;
+    -webkit-appearance: none;
+    background: linear-gradient(to right, #10b981 0%, #10b981 var(--value), #d1fae5 var(--value), #d1fae5 100%);
+  }
+
+  .nc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #10b981;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  }
+
+  .nc-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #10b981;
+    cursor: pointer;
+    border: none;
+  }
+
+  .nc-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .nc-slider-value {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #10b981;
+    margin: 1rem 0;
+  }
+
+  .nc-recommendation {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .nc-recommendation h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nc-recommendation-details {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .nc-recommendation-details p {
+    margin-bottom: 0.5rem;
+  }
+
+  .nc-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .nc-calendar-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+
+  .nc-calendar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+
+  .nc-calendar-card.active {
+    border-color: #10b981;
+    transform: scale(1.05);
+  }
+
+  .nc-calendar-card h3 {
+    font-size: 1.3rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .nc-fruit-list {
+    list-style: none;
+  }
+
+  .nc-fruit-list li {
+    padding: 0.5rem 0;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nc-fruit-dot {
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    border-radius: 50%;
+  }
+
+  .nc-upsell {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .nc-upsell h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .nc-upsell p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  .nc-upsell .nc-btn {
+    background: white;
+    color: #a855f7;
+    font-size: 1.2rem;
+    padding: 18px 40px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+
+  .nc-upsell .nc-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 768px) {
+    .nc-hero h1 {
+      font-size: 2rem;
+    }
+    .nc-hero p {
+      font-size: 1.1rem;
+    }
+    .nc-section-title {
+      font-size: 2rem;
+    }
+    .nc-process-steps {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .nc-process-line {
+      display: none;
+    }
+    .nc-calendar-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  }
+</style>
+
+<div class="nasil-calisir-wrapper">
+  <div class="nc-hero">
+    <h1>{{ section.settings.hero_title }}</h1>
+    <p>{{ section.settings.hero_subtitle }}</p>
+  </div>
+
+  <div class="nc-container">
+    <section class="nc-section">
+      <h2 class="nc-section-title">Kolay Adımlar</h2>
+
+      <div class="nc-process-steps">
+        <div class="nc-process-line">
+          <div class="nc-process-line-active" id="progressLine"></div>
+        </div>
+        <div class="nc-step-indicator active" data-step="0">1</div>
+        <div class="nc-step-indicator" data-step="1">2</div>
+        <div class="nc-step-indicator" data-step="2">3</div>
+      </div>
+
+      <div class="nc-step-content" id="stepContent">
+        <div class="nc-step-icon">🍎</div>
+        <h3 id="stepTitle">Adım 1: Ofis Büyüklüğüne Göre Sepetini Seç</h3>
+        <p id="stepDesc">Ofisinizdeki kişi sayısına uygun meyve sepeti paketini belirleyin.</p>
+        <div class="nc-step-buttons">
+          <button class="nc-btn nc-btn-secondary" id="prevBtn" style="display: none;">← Önceki</button>
+          <button class="nc-btn nc-btn-primary" id="nextBtn">Sonraki →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="nc-section nc-calculator">
+      <h2 class="nc-section-title">Akıllı Ofis Hesaplayıcı</h2>
+
+      <div class="nc-calculator-inner">
+        <div class="nc-calculator-label">
+          👥 Ofiste Kaç Kişisiniz?
+        </div>
+
+        <div class="nc-slider-container">
+          <input type="range" min="5" max="50" value="15" class="nc-slider" id="officeSlider">
+          <div class="nc-slider-labels">
+            <span>5 kişi</span>
+            <span>50 kişi</span>
+          </div>
+          <div class="nc-slider-value" id="sliderValue">15 kişi</div>
+        </div>
+
+        <div class="nc-recommendation">
+          <h4>✓ Sizin İçin Önerimiz</h4>
+          <div class="nc-recommendation-details" id="recommendation">
+            <p><strong>Sepet Boyutu:</strong> Medium (10-25 kişi)</p>
+            <p><strong>Teslimat Sıklığı:</strong> Haftada 2</p>
+          </div>
+          <button class="nc-btn" style="background: white; color: #10b981; width: 100%;">
+            Bu Paketi Seç
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="nc-section">
+      <h2 class="nc-section-title">Mevsimsel Meyve Takvimi</h2>
+      <p style="text-align: center; color: #6b7280; font-size: 1.2rem; margin-bottom: 3rem;">
+        Hangi ayda hangi meyveler taze ve sezonda? İşte size rehber!
+      </p>
+
+      <div class="nc-calendar-grid" id="calendarGrid"></div>
+    </section>
+
+    <section class="nc-section nc-upsell">
+      <h2>Bu Seçenekler Size Uymadı mı?</h2>
+      <p>Endişelenmeyin! Size özel bir çözüm hazırlayalım.</p>
+      <button class="nc-btn" onclick="window.location.href='{{ section.settings.contact_url }}'">
+        💬 Meyve Danışmanı ile İletişime Geç
+      </button>
+    </section>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    {
+      icon: '🍎',
+      title: 'Ofis Büyüklüğüne Göre Sepetini Seç',
+      desc: 'Ofisinizdeki kişi sayısına uygun meyve sepeti paketini belirleyin.'
+    },
+    {
+      icon: '📅',
+      title: 'Teslimat Sıklığını Belirle',
+      desc: 'Size en uygun teslimat frekansını seçin: Haftada 1, 2 veya 3 gün.'
+    },
+    {
+      icon: '🚚',
+      title: 'Aboneliğini Başlat',
+      desc: 'Siparişinizi onaylayın, gerisini bize bırakın. Taze meyveler kapınızda!'
+    }
+  ];
+
+  let currentStep = 0;
+
+  function updateStep() {
+    document.querySelector('.nc-step-icon').textContent = steps[currentStep].icon;
+    document.getElementById('stepTitle').textContent = `Adım ${currentStep + 1}: ${steps[currentStep].title}`;
+    document.getElementById('stepDesc').textContent = steps[currentStep].desc;
+
+    document.querySelectorAll('.nc-step-indicator').forEach((el, i) => {
+      el.classList.toggle('active', i <= currentStep);
+    });
+
+    const progress = (currentStep / 2) * 100;
+    document.getElementById('progressLine').style.width = progress + '%';
+
+    document.getElementById('prevBtn').style.display = currentStep > 0 ? 'inline-flex' : 'none';
+    document.getElementById('nextBtn').textContent = currentStep === 2 ? '✓ Başla' : 'Sonraki →';
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (currentStep < 2) {
+      currentStep++;
+      updateStep();
+    }
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateStep();
+    }
+  });
+
+  document.querySelectorAll('.nc-step-indicator').forEach(el => {
+    el.addEventListener('click', () => {
+      currentStep = parseInt(el.dataset.step);
+      updateStep();
+    });
+  });
+
+  const slider = document.getElementById('officeSlider');
+  const sliderValue = document.getElementById('sliderValue');
+  const recommendation = document.getElementById('recommendation');
+
+  function updateRecommendation() {
+    const value = parseInt(slider.value);
+    sliderValue.textContent = value + ' kişi';
+
+    const percentage = ((value - 5) / 45) * 100;
+    slider.style.setProperty('--value', percentage + '%');
+
+    let size, frequency, people;
+    if (value <= 10) {
+      size = 'Small';
+      frequency = 'Haftada 1';
+      people = '5-10 kişi';
+    } else if (value <= 25) {
+      size = 'Medium';
+      frequency = 'Haftada 2';
+      people = '10-25 kişi';
+    } else {
+      size = 'Large';
+      frequency = 'Haftada 3';
+      people = '25+ kişi';
+    }
+
+    recommendation.innerHTML = `
+      <p><strong>Sepet Boyutu:</strong> ${size} (${people})</p>
+      <p><strong>Teslimat Sıklığı:</strong> ${frequency}</p>
+    `;
+  }
+
+  slider.addEventListener('input', updateRecommendation);
+  updateRecommendation();
+
+  const fruits = [
+    { month: 'Ocak', fruits: ['Portakal', 'Mandalina', 'Elma'] },
+    { month: 'Şubat', fruits: ['Portakal', 'Mandalina', 'Greyfurt'] },
+    { month: 'Mart', fruits: ['Çilek', 'Portakal', 'Elma'] },
+    { month: 'Nisan', fruits: ['Çilek', 'Kiraz', 'Elma'] },
+    { month: 'Mayıs', fruits: ['Kiraz', 'Çilek', 'Erik'] },
+    { month: 'Haziran', fruits: ['Kiraz', 'Kayısı', 'Şeftali'] },
+    { month: 'Temmuz', fruits: ['Karpuz', 'Kavun', 'Şeftali'] },
+    { month: 'Ağustos', fruits: ['Karpuz', 'Kavun', 'Üzüm'] },
+    { month: 'Eylül', fruits: ['Üzüm', 'İncir', 'Armut'] },
+    { month: 'Ekim', fruits: ['Nar', 'Ayva', 'Elma'] },
+    { month: 'Kasım', fruits: ['Nar', 'Mandalina', 'Elma'] },
+    { month: 'Aralık', fruits: ['Mandalina', 'Portakal', 'Elma'] }
+  ];
+
+  const calendarGrid = document.getElementById('calendarGrid');
+  fruits.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'nc-calendar-card';
+    card.innerHTML = `
+      <h3>${item.month}</h3>
+      <ul class="nc-fruit-list">
+        ${item.fruits.map(f => `<li><span class="nc-fruit-dot"></span>${f}</li>`).join('')}
+      </ul>
+    `;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.nc-calendar-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+    calendarGrid.appendChild(card);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Nasıl Çalışır",
+  "settings": [
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Ana Başlık",
+      "default": "Nasıl Çalışır?"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "Alt Başlık",
+      "default": "3 basit adımda ofisinde taze meyve keyfi"
+    },
+    {
+      "type": "text",
+      "id": "contact_url",
+      "label": "İletişim Sayfası URL",
+      "default": "/pages/iletisim"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nasıl Çalışır"
+    }
+  ]
+}
+{% endschema %}
