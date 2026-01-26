@@ -1,0 +1,736 @@
+<!doctype html>
+{%- liquid
+  capture metadata_setup
+    assign t_name         = request.page_type
+    assign iso_code       = request.locale.iso_code
+    assign use_rtl        = settings.use_rtl
+    assign current_lang_iso_first = iso_code | split: '-' | first
+
+    assign lis_rtl_default = 'ar; dv; ha; he; ku; fa; ur; ug; ps; yi'
+    if use_rtl == '3'
+      assign lis_rtl      = lis_rtl_default
+      assign iso_code_ck  = iso_code | split: '-' | first
+    else
+      assign lis_rtl      = settings.list_rtl | default: lis_rtl_default
+      assign iso_code_ck  = iso_code
+    endif
+
+    assign is_rtl = false
+    if use_rtl == '1'
+      assign is_rtl = true
+    elsif use_rtl == '2' or use_rtl == '3'
+      if lis_rtl contains iso_code_ck
+        assign is_rtl = true
+      endif
+    endif
+
+    assign body_img = settings.body_bg_image
+    assign class_lazy = ''
+    if body_img != blank and settings.general_layout == 'boxed'
+      assign class_lazy = 'lazyloadt4s'
+    endif
+
+    capture class_html_parts
+      echo 't4sp-theme'
+      echo ' t4s-wrapper__' | append: settings.general_layout
+      echo ' rtl_' | append: is_rtl
+      echo ' swatch_color_style_' | append: settings.swatch_color_style
+      echo ' pr_border_style_' | append: settings.pr_border_style
+      echo ' pr_img_effect_' | append: settings.pr_img_effect
+      echo ' enable_eff_img1_' | append: settings.enable_eff_img1
+      echo ' badge_shape_' | append: settings.badge_shape
+      echo ' css_for_wis_app_' | append: settings.enable_css_wis
+      if settings.use_cus_lz and settings.cus_lz
+        echo ' t4s-lzcus-true'
+      endif
+      echo ' shadow_round_img_' | append: settings.enable_shadow_round_img
+      echo ' t4s-header__' | append: settings.header_design
+      echo ' is-remove-unavai-' | append: settings.variant_remove
+      echo ' t4_compare_' | append: settings.enable_compe
+      if settings.type_qv == '1'
+        echo ' t4s-sidebar-qv'
+      endif
+      echo ' t4s-cart-count-' | append: cart.item_count
+      echo ' t4s-pr-ellipsis-' | append: settings.enable_pr_ellipsis
+    endcapture
+    assign class_html = class_html_parts | strip_newlines | strip | split: ' ' | join: ' '
+
+    assign shop_name_escaped = shop.name | escape
+    assign current_url = canonical_url
+
+    case current_lang_iso_first
+      when 'tr'
+        assign home_title = 'Vinterro | Özgün Tasarım Aydınlatma & Seramik'
+        assign home_description = 'Vinterro: El yapımı seramik, 3D aydınlatma ve pop-art heykeller. Evinize sanat katın. ✓ Ücretsiz Kargo ✓ Hızlı Teslimat'
+      when 'es'
+        assign home_title = 'Vinterro | Iluminación y Cerámica de Diseño'
+        assign home_description = 'Cerámica artesanal, iluminación 3D y esculturas pop-art. Arte para tu hogar. ✓ Envío Gratis ✓ Entrega Rápida'
+      when 'fr'
+        assign home_title = 'Vinterro | Éclairage et Céramique Design'
+        assign home_description = 'Céramique artisanale, éclairage 3D et sculptures pop-art. Art pour votre maison. ✓ Livraison Gratuite'
+      when 'de'
+        assign home_title = 'Vinterro | Design-Beleuchtung & Keramik'
+        assign home_description = 'Handgefertigte Keramik, 3D-Beleuchtung und Pop-Art-Skulpturen. Kunst für Ihr Zuhause. ✓ Kostenloser Versand'
+      when 'ar'
+        assign home_title = 'Vinterro | إضاءة وسيراميك فني'
+        assign home_description = 'سيراميك يدوي، إضاءة 3D ومنحوتات بوب آرت. فن لمنزلك. ✓ شحن مجاني ✓ توصيل سريع'
+      when 'ru'
+        assign home_title = 'Vinterro | Дизайнерское Освещение и Керамика'
+        assign home_description = 'Керамика ручной работы, 3D освещение и поп-арт скульптуры. Искусство для вашего дома. ✓ Бесплатная доставка'
+      when 'ko'
+        assign home_title = 'Vinterro | 디자인 조명 & 도자기'
+        assign home_description = '수제 도자기, 3D 조명, 팝아트 조각. 당신의 집에 예술을. ✓ 무료 배송'
+      when 'fi'
+        assign home_title = 'Vinterro | Design-Valaistus & Keramiikka'
+        assign home_description = 'Käsintehty keramiikka, 3D-valaistus ja pop-taide veistokset. Taidetta kotiisi. ✓ Ilmainen Toimitus'
+      else
+        assign home_title = 'Vinterro | Unique Lighting & Ceramic Design'
+        assign home_description = 'Handmade ceramics, 3D lighting & pop-art sculptures. Add art to your home. ✓ Free Shipping ✓ Fast Delivery'
+    endcase
+
+    capture seo_title_parts
+      if template == 'index'
+        echo home_title
+      elsif template == 'product'
+        echo product.title | escape | append: ' | ' | append: shop_name_escaped
+      elsif template == 'collection'
+        echo collection.title | escape | append: ' | ' | append: shop_name_escaped
+      elsif template == 'article'
+        echo article.title | escape | append: ' | Blog | ' | append: shop_name_escaped
+      else
+        echo page_title | escape | append: ' | ' | append: shop_name_escaped
+      endif
+    endcapture
+    assign seo_title_content = seo_title_parts | strip
+
+    if current_tags
+      assign meta_tags_suffix = current_tags | join: ', '
+      assign seo_title_content = seo_title_content | append: ' – ' | append: ('general.meta.tags' | t: tags: meta_tags_suffix)
+    endif
+    if current_page != 1
+      assign seo_title_content = seo_title_content | append: ' – ' | append: ('general.meta.page' | t: page: current_page)
+    endif
+
+    capture meta_description_content_parts
+      if template == 'index'
+        echo home_description
+      elsif template == 'product'
+        if product.description != blank
+          echo product.description | strip_html | truncate: 145
+          echo ' ✓ Ücretsiz Kargo'
+        else
+          echo product.title | escape | append: ' - Hemen sipariş verin! ✓ Aynı Gün Kargo'
+        endif
+      elsif template == 'collection'
+        if collection.description != blank
+          echo collection.description | strip_html | truncate: 140
+          echo ' Hemen keşfedin!'
+        else
+          echo collection.title | escape | append: ' koleksiyonu. En yeni tasarımlar ' | append: shop_name_escaped | append: '\'de!'
+        endif
+      elsif template == 'article'
+        echo article.excerpt_or_content | strip_html | truncate: 155
+      elsif page_description
+        echo page_description | strip_html | truncate: 155
+      else
+        echo home_description
+      endif
+    endcapture
+    assign meta_description_content = meta_description_content_parts | strip | escape
+
+    assign product_description_for_schema = ''
+    if template == 'product'
+      if product.description != blank
+        assign product_description_for_schema = product.description | strip_html | escape | truncate: 5000
+      else
+        assign product_description_for_schema = product.title | escape | append: ' - ' | append: shop_name_escaped
+      endif
+    endif
+  endcapture
+-%}
+<html class="{{ class_html }} no-js" lang="{{ request.locale.iso_code }}"{% if is_rtl %} dir="rtl"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="{{ settings.body_bg | default: '#ffffff' }}">
+
+  {%- comment -%} SEO: Robots meta tag {%- endcomment -%}
+  {%- if template contains 'search' or template contains 'cart' or template contains 'account' -%}
+    <meta name="robots" content="noindex, nofollow">
+  {%- else -%}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {%- endif -%}
+
+  {%- comment -%} Preconnect - Critical Resources {%- endcomment -%}
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+  <link rel="dns-prefetch" href="//ajax.googleapis.com">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="//widget.trustpilot.com">
+
+  {%- if settings.font_source == '1' and (settings.fnt_fm_sp1.system? == false or settings.fnt_fm_sp2.system? == false or settings.fnt_fm_sp3.system? == false) -%}
+    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+  {%- endif -%}
+
+  {%- comment -%} Critical CSS {%- endcomment -%}
+  <link rel="preload" href="{{ 'base.aio.min.css' | asset_url }}" as="style">
+  <link rel="stylesheet" href="{{ 'base.aio.min.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="{{ 'base.aio.min.css' | asset_url }}"></noscript>
+
+  {%- comment -%} LCP Image Preload {%- endcomment -%}
+  {%- if template == 'index' -%}
+    {%- if settings.lcp_hp_image_mb != blank -%}
+      <link rel="preload" fetchpriority="high" href="{{ settings.lcp_hp_image_mb | image_url: width: 750 }}" as="image" media="(max-width: 749px)">
+    {%- endif -%}
+    {%- if settings.lcp_hp_image_dk != blank -%}
+      <link rel="preload" fetchpriority="high" href="{{ settings.lcp_hp_image_dk | image_url: width: 1920 }}" as="image" media="(min-width: 750px)">
+    {%- endif -%}
+  {%- elsif template == 'product' and product.featured_image -%}
+    <link rel="preload" fetchpriority="high" href="{{ product.featured_image | image_url: width: 1024 }}" as="image">
+  {%- elsif template == 'collection' and collection.image -%}
+    <link rel="preload" fetchpriority="high" href="{{ collection.image | image_url: width: 1024 }}" as="image">
+  {%- elsif settings.logo != blank -%}
+    <link rel="preload" href="{{ settings.logo | image_url: width: 300 }}" as="image">
+  {%- endif -%}
+
+  {%- comment -%} Font Preload {%- endcomment -%}
+  {%- if settings.font_preload_url_1 != blank -%}
+    <link rel="preload" href="{{ settings.font_preload_url_1 }}" as="font" type="font/woff2" crossorigin>
+  {%- endif -%}
+  {%- if settings.font_preload_url_2 != blank -%}
+    <link rel="preload" href="{{ settings.font_preload_url_2 }}" as="font" type="font/woff2" crossorigin>
+  {%- endif -%}
+
+  {%- comment -%} Favicons {%- endcomment -%}
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ settings.favicon | image_url: width: 16, height: 16 }}">
+  {%- endif -%}
+  {%- if settings.favicon_apple != blank -%}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon_apple | image_url: width: 180, height: 180 }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ settings.favicon_apple | image_url: width: 152, height: 152 }}">
+  {%- endif -%}
+
+  {%- comment -%} SEO: Title Tag {%- endcomment -%}
+  <title>{{ seo_title_content }}</title>
+
+  {%- comment -%} SEO: Meta Description {%- endcomment -%}
+  <meta name="description" content="{{ meta_description_content }}">
+
+  {%- comment -%} SEO: Keywords (optional - low impact but doesn't hurt) {%- endcomment -%}
+  {%- if template == 'product' -%}
+    <meta name="keywords" content="{{ product.title | escape }}, {{ product.vendor | escape }}, {{ product.type | escape }}, {{ product.tags | join: ', ' | escape }}">
+  {%- elsif template == 'collection' -%}
+    <meta name="keywords" content="{{ collection.title | escape }}, {{ collection.all_tags | join: ', ' | truncate: 200 | escape }}">
+  {%- endif -%}
+
+  {%- comment -%} SEO: Canonical URL (cleaned) {%- endcomment -%}
+  {%- liquid
+    assign clean_canonical = canonical_url | split: '?' | first | split: '#' | first
+  -%}
+  <link rel="canonical" href="{{ clean_canonical }}">
+
+  {%- comment -%} SEO: Hreflang Tags {%- endcomment -%}
+  {%- for locale in shop.published_locales -%}
+    {%- liquid
+      assign locale_path = request.path
+      if locale.root_url != blank and locale.root_url != '/'
+        assign locale_path = locale.root_url | append: request.path
+      endif
+      assign clean_locale_url = request.origin | append: locale_path | split: '?' | first
+    -%}
+    <link rel="alternate" hreflang="{{ locale.iso_code }}" href="{{ clean_locale_url }}">
+  {%- endfor -%}
+  <link rel="alternate" hreflang="x-default" href="{{ request.origin }}{{ request.path | split: '?' | first }}">
+
+  {%- comment -%} SEO: Open Graph Tags {%- endcomment -%}
+  <meta property="og:site_name" content="{{ shop_name_escaped }}">
+  <meta property="og:url" content="{{ clean_canonical }}">
+  <meta property="og:locale" content="{{ request.locale.iso_code | replace: '-', '_' }}">
+  <meta property="og:title" content="{{ seo_title_content }}">
+  <meta property="og:description" content="{{ meta_description_content }}">
+
+  {%- comment -%} SEO: Twitter Card Tags {%- endcomment -%}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@vinterrostudio">
+  <meta name="twitter:title" content="{{ seo_title_content }}">
+  <meta name="twitter:description" content="{{ meta_description_content }}">
+
+  {%- comment -%} SEO: OG & Twitter Images {%- endcomment -%}
+  {%- liquid
+    assign og_image_alt = shop_name_escaped
+    assign og_image_to_use = settings.share_image
+
+    if template == 'product' and product.featured_image
+      assign og_image_to_use = product.featured_image
+      assign og_image_alt = product.title | escape
+    elsif template == 'collection'
+      if collection.image
+        assign og_image_to_use = collection.image
+      elsif collection.products.first.featured_image
+        assign og_image_to_use = collection.products.first.featured_image
+      endif
+      assign og_image_alt = collection.title | escape
+    elsif template == 'article' and article.image
+      assign og_image_to_use = article.image
+      assign og_image_alt = article.title | escape
+    endif
+
+    if og_image_to_use != blank
+      assign og_image_width = 1200
+      assign og_image_height = 630
+      assign processed_og_image_url = og_image_to_use | image_url: width: og_image_width, height: og_image_height, crop: 'center'
+      assign processed_twitter_image_url = og_image_to_use | image_url: width: 800, height: 418, crop: 'center'
+  -%}
+  <meta property="og:image" content="https:{{ processed_og_image_url }}">
+  <meta property="og:image:secure_url" content="https:{{ processed_og_image_url }}">
+  <meta property="og:image:width" content="{{ og_image_width }}">
+  <meta property="og:image:height" content="{{ og_image_height }}">
+  <meta property="og:image:alt" content="{{ og_image_alt }}">
+  <meta name="twitter:image" content="https:{{ processed_twitter_image_url }}">
+  <meta name="twitter:image:alt" content="{{ og_image_alt }}">
+  {%- endif -%}
+
+  {%- comment -%} SEO: OG Type {%- endcomment -%}
+  {%- if template == 'product' -%}
+    <meta property="og:type" content="product">
+    <meta property="product:brand" content="{{ product.vendor | escape }}">
+    <meta property="product:availability" content="{% if product.available %}instock{% else %}oos{% endif %}">
+    <meta property="product:condition" content="new">
+    <meta property="product:price:amount" content="{{ product.price | money_without_currency | replace: ',', '.' }}">
+    <meta property="product:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- elsif template == 'article' -%}
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="{{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+    <meta property="article:modified_time" content="{{ article.updated_at | default: article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+    <meta property="article:author" content="{{ article.author }}">
+  {%- else -%}
+    <meta property="og:type" content="website">
+  {%- endif -%}
+
+  {%- comment -%} Site Verification {%- endcomment -%}
+  <meta name="p:domain_verify" content="5dd59f1b071ddbe442ea3fc462ed9256">
+  <meta name="google-site-verification" content="9LJ9-92aOcBEcRRubTEaXUpfFYa5DzItIpDh4mq2tw0">
+
+  {%- comment -%} GTM & Analytics - Deferred Loading {%- endcomment -%}
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    var gtmLoaded = false;
+    function loadGTM() {
+      if (gtmLoaded) return;
+      gtmLoaded = true;
+
+      gtag('config', 'GTM-53WWH9XQ');
+      gtag('config', 'AW-16772121912');
+
+      var gtmScript = document.createElement('script');
+      gtmScript.async = true;
+      gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-53WWH9XQ';
+      document.head.appendChild(gtmScript);
+
+      var gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=AW-16772196371';
+      document.head.appendChild(gtagScript);
+    }
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadGTM, { timeout: 3000 });
+    } else {
+      window.addEventListener('scroll', loadGTM, { once: true, passive: true });
+      window.addEventListener('mousemove', loadGTM, { once: true, passive: true });
+      window.addEventListener('touchstart', loadGTM, { once: true, passive: true });
+      setTimeout(loadGTM, 3000);
+    }
+  </script>
+
+  <script src="{{ 'lazysizes.min.js' | asset_url }}" async></script>
+  <script src="{{ 'global.min.js' | asset_url }}" defer></script>
+  {{ content_for_header }}
+  {%- render 'head_assets', t_name: t_name, isRTL: is_rtl -%}
+
+  {%- comment -%} Schema.org: Organization {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "{{ shop.url }}/#organization",
+    "name": "{{ shop.name | escape }}",
+    "url": "{{ shop.url }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ settings.logo | image_url: width: 600 }}",
+      "width": 600,
+      "height": 600
+    },
+    "description": "{{ home_description | escape }}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "TR",
+      "addressLocality": "Balıkesir"
+    },
+    "sameAs": [
+      "https://www.instagram.com/vinterrostudio/",
+      "https://www.facebook.com/vinterrostudio/",
+      "https://tr.pinterest.com/vinterrostudio/"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "areaServed": ["TR", "US", "DE", "FR", "ES"],
+      "availableLanguage": ["Turkish", "English", "German", "French", "Spanish"]
+    }
+  }
+  </script>
+
+  {%- comment -%} Schema.org: WebSite with SearchAction {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "{{ shop.url }}/#website",
+    "url": "{{ shop.url }}",
+    "name": "{{ shop.name | escape }}",
+    "description": "{{ home_description | escape }}",
+    "inLanguage": "{{ request.locale.iso_code }}",
+    "publisher": {
+      "@id": "{{ shop.url }}/#organization"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  {%- comment -%} Schema.org: Product (Product Pages Only) {%- endcomment -%}
+  {%- if template == 'product' -%}
+    {%- liquid
+      assign current_variant_for_schema = product.selected_or_first_available_variant | default: product.variants.first
+
+      assign return_policy_url_handle = 'iade-ve-degisim-politikasi'
+      assign return_policy_page = pages[return_policy_url_handle]
+      assign return_policy_url = false
+      if return_policy_page.url != blank
+        assign return_policy_url = shop.url | append: return_policy_page.url
+      endif
+
+      assign shipping_policy_url_for_schema = false
+      if shop.shipping_policy.url != blank
+        assign shipping_policy_url_for_schema = shop.url | append: shop.shipping_policy.url
+      endif
+
+      assign price_valid_until = 'now' | date: '%s' | plus: 2592000 | date: '%Y-%m-%d'
+    -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "@id": "{{ shop.url }}{{ product.url }}#product",
+      "url": "{{ shop.url }}{{ product.url }}",
+      "name": "{{ product.title | escape }}",
+      "description": "{{ product_description_for_schema }}",
+      {%- if product.media.size > 0 -%}
+      "image": [
+        {%- for image_loop in product.images limit: 8 -%}
+          "https:{{ image_loop.src | image_url: width: 1024 }}"{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ],
+      {%- elsif product.featured_image -%}
+      "image": "https:{{ product.featured_image | image_url: width: 1024 }}",
+      {%- endif -%}
+      "brand": {
+        "@type": "Brand",
+        "name": "{{ product.vendor | default: shop.name | escape }}"
+      },
+      "category": "{{ product.type | escape }}"
+      {%- if current_variant_for_schema.sku != blank -%}
+      ,"sku": "{{ current_variant_for_schema.sku | escape }}"
+      {%- endif -%}
+      {%- if current_variant_for_schema.barcode != blank -%}
+      ,"gtin13": "{{ current_variant_for_schema.barcode }}"
+      {%- endif -%}
+      {%- if product.metafields.custom.mpn != blank -%}
+      ,"mpn": "{{ product.metafields.custom.mpn }}"
+      {%- endif -%}
+      {%- if current_variant_for_schema -%}
+      ,"offers": {
+        "@type": "Offer",
+        "url": "{{ shop.url }}{{ product.url }}",
+        "priceCurrency": "{{ cart.currency.iso_code }}",
+        "price": "{{ current_variant_for_schema.price | money_without_currency | replace: ',', '.' | replace: ' ', '' }}",
+        "priceValidUntil": "{{ price_valid_until }}",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/{% if current_variant_for_schema.available %}InStock{% else %}OutOfStock{% endif %}",
+        "seller": {
+          "@type": "Organization",
+          "name": "{{ shop.name | escape }}"
+        }
+        {%- if return_policy_url or settings.return_policy_days != blank -%}
+        ,"hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "TR",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": {{ settings.return_policy_days | default: 14 }},
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/FreeReturn"
+          {%- if return_policy_url -%}
+          ,"returnPolicySeasonalOverride": false
+          {%- endif -%}
+        }
+        {%- endif -%}
+        {%- if settings.shipping_cost != blank or shipping_policy_url_for_schema -%}
+        ,"shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "{{ settings.shipping_cost | default: '0.00' }}",
+            "currency": "{{ cart.currency.iso_code }}"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "TR"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 1,
+              "maxValue": 3,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 1,
+              "maxValue": 5,
+              "unitCode": "DAY"
+            }
+          }
+        }
+        {%- endif -%}
+      }
+      {%- endif -%}
+      {%- if product.metafields.reviews.rating.value != blank and product.metafields.reviews.rating_count.value > 0 -%}
+      ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ product.metafields.reviews.rating.value | round: 1 }}",
+        "reviewCount": "{{ product.metafields.reviews.rating_count.value }}",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+      {%- endif -%}
+    }
+    </script>
+
+    {%- comment -%} Schema.org: BreadcrumbList (Product) {%- endcomment -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "{{ 'general.breadcrumbs.home' | t | default: 'Ana Sayfa' }}",
+          "item": "{{ shop.url }}"
+        }
+        {%- if product.collections.size > 0 -%}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ product.collections.first.title | escape }}",
+          "item": "{{ shop.url }}{{ product.collections.first.url }}"
+        }
+        ,{
+          "@type": "ListItem",
+          "position": 3,
+          "name": "{{ product.title | escape }}"
+        }
+        {%- else -%}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ product.title | escape }}"
+        }
+        {%- endif -%}
+      ]
+    }
+    </script>
+  {%- endif -%}
+
+  {%- comment -%} Schema.org: CollectionPage {%- endcomment -%}
+  {%- if template == 'collection' -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": "{{ shop.url }}{{ collection.url }}#collection",
+      "url": "{{ shop.url }}{{ collection.url }}",
+      "name": "{{ collection.title | escape }}",
+      "description": "{{ collection.description | strip_html | truncate: 200 | escape }}",
+      {%- if collection.image -%}
+      "image": "https:{{ collection.image | image_url: width: 1200 }}",
+      {%- endif -%}
+      "numberOfItems": {{ collection.products_count }},
+      "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": {{ collection.products_count }},
+        "itemListElement": [
+          {%- for product in collection.products limit: 10 -%}
+          {
+            "@type": "ListItem",
+            "position": {{ forloop.index }},
+            "url": "{{ shop.url }}{{ product.url }}"
+          }{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        ]
+      }
+    }
+    </script>
+
+    {%- comment -%} Schema.org: BreadcrumbList (Collection) {%- endcomment -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "{{ 'general.breadcrumbs.home' | t | default: 'Ana Sayfa' }}",
+          "item": "{{ shop.url }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ collection.title | escape }}"
+        }
+      ]
+    }
+    </script>
+  {%- endif -%}
+
+  {%- comment -%} Schema.org: Article (Blog Posts) {%- endcomment -%}
+  {%- if template == 'article' -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "@id": "{{ shop.url }}{{ article.url }}#article",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ shop.url }}{{ article.url }}"
+      },
+      "headline": "{{ article.title | escape }}",
+      "description": "{{ article.excerpt_or_content | strip_html | truncate: 155 | escape }}",
+      {%- if article.image -%}
+      "image": {
+        "@type": "ImageObject",
+        "url": "https:{{ article.image | image_url: width: 1200 }}",
+        "width": 1200,
+        "height": 630
+      },
+      {%- endif -%}
+      "datePublished": "{{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}",
+      "dateModified": "{{ article.updated_at | default: article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ article.author }}"
+      },
+      "publisher": {
+        "@id": "{{ shop.url }}/#organization"
+      }
+    }
+    </script>
+  {%- endif -%}
+
+  {%- comment -%} Schema.org: FAQPage (if FAQ section exists) {%- endcomment -%}
+  {%- if template == 'page' and page.content contains 'faq' or page.content contains 'sss' -%}
+    {%- comment -%} FAQ Schema would be added here based on page content structure {%- endcomment -%}
+  {%- endif -%}
+
+</head>
+
+<body class="template-{{ request.page_type | handle | default: 'index' }} {{ class_lazy }}"{% if body_img != blank %} data-bgset="{{ body_img | image_url: 'master' }}" data-optimumx="2" data-sizes="auto"{% endif %}>
+
+  {%- comment -%} GTM NoScript Fallback {%- endcomment -%}
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-53WWH9XQ" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe>
+  </noscript>
+
+  {%- comment -%} Accessibility: Skip Link {%- endcomment -%}
+  <a class="skip-to-content-link visually-hidden" href="#MainContent">{{ "accessibility.skip_to_text" | t }}</a>
+
+  <div class="t4s-close-overlay t4s-op-0" aria-hidden="true"></div>
+
+  <div class="t4s-website-wrapper">
+    {%- render 'header', t_name: t_name -%}
+
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    <footer id="t4s-footer" role="contentinfo">
+      {%- section 'footer' -%}
+      {%- section 'bottom-bar' -%}
+    </footer>
+  </div>
+
+  {%- comment -%} Accessibility Messages {%- endcomment -%}
+  <ul hidden class="t4s-d-none" aria-hidden="true">
+    <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+  </ul>
+
+  {%- render 'render_bottom' -%}
+
+  {%- comment -%} Trustpilot Widget - Lazy Loaded {%- endcomment -%}
+  <div class="trustpilot-widget-container" style="text-align: center; padding: 20px 0; min-height: 50px;">
+    <div class="trustpilot-widget lazyload"
+         data-locale="tr-TR"
+         data-template-id="5419b6a8b0d04a076446a9ad"
+         data-businessunit-id="6852a247257a8efcadfee4f4"
+         data-style-height="24px"
+         data-style-width="100%"
+         data-theme="light"
+         aria-label="Trustpilot Reviews">
+      <a href="https://tr.trustpilot.com/review/vinterro.com" target="_blank" rel="noopener noreferrer">Trustpilot Yorumlarımız</a>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      if ('IntersectionObserver' in window) {
+        var tpObserver = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              var script = document.createElement('script');
+              script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js';
+              script.async = true;
+              document.body.appendChild(script);
+              tpObserver.disconnect();
+            }
+          });
+        }, { rootMargin: '200px' });
+        var tpWidget = document.querySelector('.trustpilot-widget-container');
+        if (tpWidget) tpObserver.observe(tpWidget);
+      } else {
+        var script = document.createElement('script');
+        script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    })();
+  </script>
+</body>
+</html>
