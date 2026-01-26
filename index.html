@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasıl Çalışır? | Ofis Meyve Sepeti</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <span class="badge">3 Kolay Adım</span>
+            <h1>Nasıl Çalışır?</h1>
+            <p class="subtitle">Ofisinize taze meyve getirmek hiç bu kadar kolay olmamıştı</p>
+        </div>
+    </header>
+
+    <!-- Process Slider Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="process-slider">
+                <div class="process-step active" data-step="1">
+                    <div class="step-icon">
+                        <span class="step-number">1</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <h3>Sepetini Seç</h3>
+                    <p>Ofis büyüklüğüne göre size en uygun meyve sepetini belirleyin</p>
+                </div>
+
+                <div class="process-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-arrow">→</div>
+                </div>
+
+                <div class="process-step" data-step="2">
+                    <div class="step-icon">
+                        <span class="step-number">2</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Teslimat Sıklığını Belirle</h3>
+                    <p>Haftada kaç kez taze meyve gelmesini istediğinizi seçin</p>
+                </div>
+
+                <div class="process-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-arrow">→</div>
+                </div>
+
+                <div class="process-step" data-step="3">
+                    <div class="step-icon">
+                        <span class="step-number">3</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13" rx="2"></rect>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                        </svg>
+                    </div>
+                    <h3>Aboneliğini Başlat</h3>
+                    <p>Gerisini bize bırakın, taze meyveler kapınızda!</p>
+                </div>
+            </div>
+
+            <!-- Mobile Slider Dots -->
+            <div class="slider-dots">
+                <span class="dot active" data-step="1"></span>
+                <span class="dot" data-step="2"></span>
+                <span class="dot" data-step="3"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="calculator-section">
+        <div class="container">
+            <div class="calculator-wrapper">
+                <div class="calculator-header">
+                    <span class="calculator-icon">🧮</span>
+                    <h2>Akıllı Ofis Hesaplayıcı</h2>
+                    <p>Size en uygun paketi bulalım</p>
+                </div>
+
+                <div class="calculator-body">
+                    <label class="calculator-label">Ofisinizde kaç kişi çalışıyor?</label>
+
+                    <div class="slider-container">
+                        <input type="range" id="personSlider" min="1" max="100" value="25" class="person-slider">
+                        <div class="slider-labels">
+                            <span>1</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100+</span>
+                        </div>
+                    </div>
+
+                    <div class="input-alternative">
+                        <span>veya</span>
+                        <div class="person-input-wrapper">
+                            <input type="number" id="personInput" min="1" max="500" value="25" class="person-input">
+                            <span class="input-suffix">kişi</span>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <span class="sparkle">✨</span>
+                            <span>SİZİN İÇİN ÖNERİMİZ</span>
+                        </div>
+                        <div class="recommendation-body">
+                            <div class="recommendation-item">
+                                <span class="rec-icon">🧺</span>
+                                <div class="rec-details">
+                                    <span class="rec-label">Sepet Boyutu</span>
+                                    <span class="rec-value" id="basketSize">Medium</span>
+                                </div>
+                            </div>
+                            <div class="recommendation-item">
+                                <span class="rec-icon">📅</span>
+                                <div class="rec-details">
+                                    <span class="rec-label">Teslimat Sıklığı</span>
+                                    <span class="rec-value" id="deliveryFreq">Haftada 2</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="cta-button primary">
+                            Aboneliği Başlat
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fruit Calendar Section -->
+    <section class="calendar-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Meyve Takvimi</h2>
+                <p>Yılın hangi ayında hangi meyve sezonda? Hep en tazesini gönderiyoruz!</p>
+            </div>
+
+            <div class="fruit-calendar">
+                <div class="calendar-header">
+                    <div class="calendar-fruit-label">Meyve</div>
+                    <div class="calendar-months">
+                        <span>Oca</span>
+                        <span>Şub</span>
+                        <span>Mar</span>
+                        <span>Nis</span>
+                        <span>May</span>
+                        <span>Haz</span>
+                        <span>Tem</span>
+                        <span>Ağu</span>
+                        <span>Eyl</span>
+                        <span>Eki</span>
+                        <span>Kas</span>
+                        <span>Ara</span>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="portakal">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍊</span>
+                        <span class="fruit-name">Portakal</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill" style="--start: 0; --end: 3;"></div>
+                        <div class="season-fill" style="--start: 10; --end: 12;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="cilek">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍓</span>
+                        <span class="fruit-name">Çilek</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill strawberry" style="--start: 3; --end: 6;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="kiraz">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍒</span>
+                        <span class="fruit-name">Kiraz</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill cherry" style="--start: 4; --end: 7;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="elma">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍎</span>
+                        <span class="fruit-name">Elma</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill apple" style="--start: 0; --end: 12;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="seftali">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍑</span>
+                        <span class="fruit-name">Şeftali</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill peach" style="--start: 5; --end: 9;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="uzum">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍇</span>
+                        <span class="fruit-name">Üzüm</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill grape" style="--start: 7; --end: 11;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="armut">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🍐</span>
+                        <span class="fruit-name">Armut</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill pear" style="--start: 7; --end: 12;"></div>
+                    </div>
+                </div>
+
+                <div class="calendar-row" data-fruit="kivi">
+                    <div class="fruit-info">
+                        <span class="fruit-emoji">🥝</span>
+                        <span class="fruit-name">Kivi</span>
+                    </div>
+                    <div class="season-bar">
+                        <div class="season-fill kiwi" style="--start: 9; --end: 12;"></div>
+                        <div class="season-fill kiwi" style="--start: 0; --end: 4;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-legend">
+                <span class="legend-item"><span class="legend-color"></span> Sezon dönemi</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upsell / Custom Solutions Section -->
+    <section class="upsell-section">
+        <div class="container">
+            <div class="upsell-card">
+                <div class="upsell-content">
+                    <span class="upsell-emoji">🤔</span>
+                    <h2>Bu seçenekler size uymadı mı?</h2>
+                    <p>Her ofis farklıdır. 100+ kişilik ofisler, özel diyet gereksinimleri veya farklı teslimat noktaları için <strong>size özel çözümler</strong> sunuyoruz.</p>
+                    <a href="/iletisim" class="cta-button secondary">
+                        <span class="btn-icon">🍎</span>
+                        Meyve Danışmanı ile İletişime Geç
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+                <div class="upsell-decoration">
+                    <span>🍎</span>
+                    <span>🍊</span>
+                    <span>🍋</span>
+                    <span>🍇</span>
+                    <span>🍓</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 Ofis Meyve Sepeti. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
